@@ -47,3 +47,14 @@ let tab_occs_eff t =
 assert([|1; 2; 1; 1; 0|]=tab_occs_eff [|0;1;1;2;3|]);;
 
 (*Exo 2*)
+
+let somme_cumulees t =
+  let n = (Array.length t) in
+  let res = Array.make n 0 in
+  for i = 0 to n-1 do
+    let count = ref 0 in
+    for j = 0 to i do count := count+t.(i) done;
+    res.(i) <- count
+  done;
+  res
+;;
