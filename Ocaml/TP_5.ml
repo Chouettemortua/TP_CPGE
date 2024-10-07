@@ -66,18 +66,19 @@ let () =
   assert([1.;2.;3.;4.;5.;6.;7.;8.]= tri_valeur_absolue [1.;2.;3.;4.;5.;6.;7.;8.]);
 ;;
 
-let tri_deuxieme_composante u =
-  failwith "à faire"
+let tri_deuxieme_composante u = List.sort (fun (x,y) (a,b) -> y-b) u;;
 
 let () =
-  (* à compléter ! *)
-  assert true
+  assert([(1,2);(4,3)]= tri_deuxieme_composante [(4,3);(1,2)]);
 ;;
 
 (* Exercice 4 *)
 
 let rec records cmp u =
-  failwith "à faire"
+  match u with
+  |[] -> []
+  |x::y::xs -> if (cmp x y)<0 then x::(records cmp (y::xs)) else records cmp (x::xs)
+  |a -> a
 ;;
 
 let () =
@@ -99,7 +100,7 @@ let rec pgcd a b =
 ;;
 
 let rec etapes a b =
-  failwith "à faire"
+  if b = 0 then 0 else 1 + (etapes b (a mod b))
 ;;
 
 let () =
@@ -114,7 +115,23 @@ let () =
 ;;
 
 let phi n =
-  failwith "à faire"
+  let u =  ref (List.init n (etapes n)) in
+  let maxi = ref (List.hd !u) in
+  for i=0 to (n-1) do
+    if (List.hd !u)> !maxi then maxi := (List.hd !u) ;
+  u := (List.tl !u)
+  done;
+  !maxi
+;;
+
+let phi2 n =
+let rec max_liste = function
+| [] -> failwith "max d'une liste vide"
+| [x] -> x
+| x :: xs -> max x (max_liste xs) in
+(* liste_etapes = [etapes n 0; etapes n 1; ...; etapes n (n - 1)] *)
+let liste_etapes = List.init n (etapes n) in
+max_liste liste_etapes
 ;;
 
 let () =
@@ -124,6 +141,6 @@ let () =
   assert (phi 12345 = 15)
 ;;
 
-let records_euclide borne =
-  failwith "à faire"
-;;
+let records_euclide borne =List.init (borne-1) (fun a -> (a+1,phi (a+1)));;
+
+records_euclide 10;;
