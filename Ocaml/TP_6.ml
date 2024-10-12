@@ -75,7 +75,15 @@ let echange t i j =
 ;;
 
 let insertion_en_place t i =
-  failwith "not implemented"
+  let j = ref (i-1) in
+  while !j >= 0 do
+    if t.(!j) < t.((!j+1)) then j:= -1
+    else 
+      begin
+        echange t !j (!j+1);
+        j := !j-1
+      end;
+  done
 ;;
 
 let teste_insertion_en_place () =
@@ -92,9 +100,12 @@ let teste_insertion_en_place () =
   assert (teste [|2; 3; 5; 7; 5|] 4 [|2; 3; 5; 5; 7|]);
   assert (teste [|2; 3; 5; 7; 8|] 4 [|2; 3; 5; 7; 8|])
 ;;
+teste_insertion_en_place ();;
 
 let tri_insertion_tableau t =
-  failwith "not implemented"
+  for i=1 to (Array.length t)-1 do
+    insertion_en_place t i
+  done
 ;;
 
 let teste_tri_insertion_tableau () =
@@ -113,13 +124,39 @@ let teste_tri_insertion_tableau () =
   let t = Array.init 500 (fun i -> Random.int 500) in
   assert (teste t)
 ;;
+teste_tri_insertion_tableau ();;
 
 let insertion_en_place_bis t i =
-  failwith "not implemented"
+  let j = ref (i-1) in
+  let s = t.(!j+1) in
+  while !j >= 0 &&  t.(!j) > s  do
+    t.(!j+1) <- t.(!j);
+    j := !j-1
+  done;
+  t.(!j+1) <- s
 ;;
 
+let teste_insertion_en_place_bis () =
+  let teste t i t' =
+    insertion_en_place_bis t i;
+    t = t' in
+  assert (teste [|3; 5; 7; 2; 3|] 2 [|3; 5; 7; 2; 3|]);
+  assert (teste [|3; 5; 7; 2; 3|] 3 [|2; 3; 5; 7; 3|]);
+  assert (teste [|3; 5; 7; 3; 3|] 3 [|3; 3; 5; 7; 3|]);
+  assert (teste [|3; 5; 7; 4; 3|] 3 [|3; 4; 5; 7; 3|]);
+  assert (teste [|3; 5; 7; 6; 3|] 3 [|3; 5; 6; 7; 3|]);
+  assert (teste [|3; 5; 7; 9; 3|] 3 [|3; 5; 7; 9; 3|]);
+  assert (teste [|2; 3; 5; 7; 1|] 4 [|1; 2; 3; 5; 7|]);
+  assert (teste [|2; 3; 5; 7; 5|] 4 [|2; 3; 5; 5; 7|]);
+  assert (teste [|2; 3; 5; 7; 8|] 4 [|2; 3; 5; 7; 8|])
+;;
+
+teste_insertion_en_place_bis ();;
+
 let tri_insertion_tableau_bis t =
-  failwith "not implemented"
+  for i=1 to (Array.length t)-1 do
+    insertion_en_place_bis t i
+  done
 ;;
 
 
@@ -139,21 +176,37 @@ let teste_tri_insertion_tableau_bis () =
   let t = Array.init 500 (fun i -> Random.int 500) in
   assert (teste t)
 ;;
+teste_tri_insertion_tableau_bis ();;
 
 (**********************************)
 (*            Exercice 8          *)
 (**********************************)
 
 let rec eclate u =
-  failwith "not implemented"
+  match u with
+  |[] -> ([],[])
+  |[x] -> ([], [x])
+  |[x;y] -> ([x],[y])
+  |x::y::xs -> let g,d = eclate xs in
+              (x::g, y::d)
 ;;
 
 let rec fusionne u v =
-  failwith "not implemented"
+  match u , v with
+  |u,[] -> u
+  |[],v -> v
+  |x::xs,y::ys -> 
+    if x<y then x::(fusionne xs v)
+    else y::(fusionne u ys)
 ;;
 
 let rec tri_fusion u =
-  failwith "not implemented"
+  match u with
+  |[] -> []
+  |[x]->[x]
+  |x::xs-> 
+    let g,d = eclate u in
+    fusionne (tri_fusion g) (tri_fusion d)
 ;;
 
 let teste_tri_fusion () =
@@ -167,6 +220,7 @@ let teste_tri_fusion () =
   let u = List.init 10_000 (fun i -> Random.int 10_000) in
   assert (tri_fusion u = List.sort compare u)
 ;;
+teste_tri_fusion ();;
 
 let nb_occs_trie t i =
   failwith "not implemented"
