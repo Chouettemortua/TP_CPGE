@@ -104,3 +104,60 @@ let rec tri_unique u =
 ;;
 
 tri_unique [1;2;3;4;5;6;7;8;9;4;5;6;7;8;9];;
+
+let map_prefixe x liste = List.map (fun u -> x::u) liste;;
+
+let rec parties u =
+  match u with
+  |[] -> [[]]
+  |x::xs -> let partie = parties xs in
+  partie @ map_prefixe x partie
+;;
+
+
+
+let combinaison_filter u n =
+  let rec aux v n =
+    match v with
+    |[] -> []
+    |x::xs -> if (List.length x) = n then x :: aux xs n else aux xs n in
+  aux (parties u) n
+;;
+
+
+let rec combinaison u n =
+  match u,n with
+  |_ , 0 -> [[]]
+  |[],_ -> []
+  |x::xs , _ -> combinaison xs n @ map_prefixe x (combinaison xs (n-1))
+;;
+
+combinaison [1;2;3;6] 2;; 
+
+let rec parties_comb u =
+  let n = List.length u in
+  let res = ref [] in
+  for i = 0 to n do
+    res := !res @ combinaison u i 
+  done;
+  !res
+;;
+
+parties [1;2;5];;
+parties_comb [1;2;3];;
+
+let avec_repetition u =
+  let rec aux u n =
+    match u,n with
+    |_ , 0 -> [[]]
+    |[],_ -> []
+    |x::xs , _ -> 
+    aux xs n @ map_prefixe x (aux xs (n-1)) @ map_prefixe x(aux (x::xs) (n-1)) in
+  aux u (List.length u)
+;;
+
+List.length (avec_repetition [1;2;3;7]);;
+avec_repetition [1;2;3;7];;
+
+
+  
