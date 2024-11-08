@@ -1,3 +1,5 @@
+(*Exo 1*)
+
 let rec pour_tout pred u =
   match u with
   | [] -> true
@@ -22,6 +24,8 @@ let rec filtre pred u =
 
 assert(filtre (fun x ->  x mod 2 = 0 ) [1;3;5] = []);;
 assert(filtre (fun x -> x mod 2 = 0 ) [2;4;3;6] = [2;4;6]);;
+
+(*Exo 2*)
 
 let appartient x u = existe (fun y -> y=x) u;;
 
@@ -49,6 +53,12 @@ let rec prive_de u v =
 
 let union u v = u @ prive_de v u;;
 
+inter [1;2;3;4;5;6;7;8;9] [4;5;6;7;8;9];;
+prive_de [1;2;3;4;5;6;7;8;9] [4;5;6;7;8;9];;
+union [1;2;3;4;5;6;7;8;9] [4;5;6;7;8;9];;
+
+(*Exo 3/4*)
+
 let rec better_union u v =
   match u , v with
   |u,[] -> u
@@ -57,10 +67,8 @@ let rec better_union u v =
     if x<y then x::(better_union xs v)
     else y::(better_union u ys)
 ;;
-union [1;2;3;4;5;6;7;8;9] [4;5;6;7;8;9];;
+
 better_union [1;2;3;4;5;6;7;8;9] [4;5;6;7;8;9];;
-inter [1;2;3;4;5;6;7;8;9] [4;5;6;7;8;9];;
-prive_de [1;2;3;4;5;6;7;8;9] [4;5;6;7;8;9];;
 
 let rec better_inclu u v =
   match u , v with
@@ -73,6 +81,8 @@ let rec better_inclu u v =
 ;;
 
 let better_egal u v = better_inclu u v && better_inclu v u ;;
+
+(*Exo 5*)
 
 let rec eclate u =
   match u with
@@ -105,6 +115,8 @@ let rec tri_unique u =
 
 tri_unique [1;2;3;4;5;6;7;8;9;4;5;6;7;8;9];;
 
+(*Exo 6*)
+
 let map_prefixe x liste = List.map (fun u -> x::u) liste;;
 
 let rec parties u =
@@ -114,7 +126,7 @@ let rec parties u =
   partie @ map_prefixe x partie
 ;;
 
-
+(*Exo 7*)
 
 let combinaison_filter u n =
   let rec aux v n =
@@ -146,18 +158,64 @@ let rec parties_comb u =
 parties [1;2;5];;
 parties_comb [1;2;3];;
 
-let avec_repetition u =
-  let rec aux u n =
-    match u,n with
-    |_ , 0 -> [[]]
-    |[],_ -> []
-    |x::xs , _ -> 
-    aux xs n @ map_prefixe x (aux xs (n-1)) @ map_prefixe x(aux (x::xs) (n-1)) in
-  aux u (List.length u)
+let rec avec_repetition u n =
+  match u,n with
+  |_ , 0 -> [[]]
+  |[],_ -> []
+  |x::xs , n -> (avec_repetition xs (n)) @ (map_prefixe x (avec_repetition u (n-1)))
+;; 
+
+List.length (avec_repetition [1;2;3;7] 3);;
+
+avec_repetition [1;2;3;7] 3;;
+
+(*Exo 8*)
+
+let rec insertions x u =
+  match x,u with
+  |_,[] -> [[x]]
+  |_, y::ys -> (x::u)::map_prefixe y (insertions x ys)
 ;;
 
-List.length (avec_repetition [1;2;3;7]);;
-avec_repetition [1;2;3;7];;
+insertions 7 [2; 5; 3];;
 
+let rec applatit u =
+  match u with
+  |[] -> []
+  |x::xs -> x@applatit xs
+;;
 
-  
+applatit [[1; 2; 3]; [7; 12]; [4; 1]];;
+
+let rec permutations u =
+  match u with
+  |[] -> [[]]
+  |x::xs -> applatit(List.map (insertions x) (permutations xs))
+    
+;;
+
+permutations [2; 3; 5];;
+
+(*Exo 9*)
+
+let plistes u n =
+  tri_unique (applatit (List.map permutations (avec_repetition u n)))
+;;
+
+List.length ( plistes [1; 2; 3] 3);;
+
+plistes [1; 2; 3] 3 ;;
+
+let plistes_opti u n =
+  match n with
+  |0 -> [[]]
+  |_ -> 
+    let moins_un = plistes u (n - 1) in
+    List.flatten (List.map (fun x -> map_prefixe x moins_un) u)
+;;
+
+List.length ( plistes_opti [1; 2; 3] 3);;
+
+plistes_opti [1; 2; 3] 3 ;;
+
+(*Exo 10*)
