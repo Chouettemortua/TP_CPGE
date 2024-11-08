@@ -206,16 +206,31 @@ List.length ( plistes [1; 2; 3] 3);;
 
 plistes [1; 2; 3] 3 ;;
 
-let plistes_opti u n =
+let rec plistes_opti u n =
   match n with
   |0 -> [[]]
   |_ -> 
-    let moins_un = plistes u (n - 1) in
-    List.flatten (List.map (fun x -> map_prefixe x moins_un) u)
+    let moins_un = plistes_opti u (n - 1) in
+    applatit (List.map (fun x -> map_prefixe x moins_un) u)
 ;;
 
 List.length ( plistes_opti [1; 2; 3] 3);;
 
-plistes_opti [1; 2; 3] 3 ;;
+plistes_opti [1; 2; 3] 3 ;; 
 
 (*Exo 10*)
+
+let ppm_array t =
+  let n = Array.length t in
+  let plus_petit_present = Array.make n true in
+  for i = 0 to n - 1 do
+    if t.(i) >= 0 && t.(i) < n then plus_petit_present.(t.(i)) <- false
+  done;
+    let k = ref 0 in
+    while !k < n && not plus_petit_present.(!k) do
+      k := !k+1
+  done;
+  !k
+;;
+  
+ppm_array [|2;3;1;5;0|] ;;
