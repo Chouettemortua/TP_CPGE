@@ -6,8 +6,8 @@
 
 #define HEAP_SIZE 32
 uint64_t heap[HEAP_SIZE];
-const u_int64_t block_size = 8;
-const uint64_t prologue = 2;
+const uint64_t block_size = 8;
+const uint64_t prologue = 3;
 
 void set_memory(uint64_t *p, uint64_t n, uint64_t value)
 {
@@ -49,23 +49,50 @@ uint64_t previous(uint64_t i)
     return i - 2 - heap[i - 2] + (heap[i - 2] % 2);
 }
 
+void add_begin_chain(uint64_t i){
+    if(heap[1]==0){
+        heap[1] = i;
+        heap[i] = 0;
+        heap[i+1] = 0;
+    }
+    else{
+        heap[i]=0;
+        heap[heap[1]] = i;
+        heap[i+1] = heap[1];
+        heap[1]=i;
+    }
+}
+
+void remove_from_chain(uint64_t i){
+    heap[heap[i]+1] = heap[i+1];
+    heap[heap[i+1]] = heap[i];
+}
+
 //* free q6 complexité contante
 void free_ui(uint64_t *p)
 {
     uint64_t i = p - &heap[0];
     int size = read_size(i);
+
     if (is_free(next(i)))
     {
+        remove_from_chain(next(i));
         size += read_size(next(i));
     }
+
     if (is_free(previous(i)))
     {
+        remove_from_chain(previous(i));
         size += read_size(previous(i));
         i = previous(i);
     }
+
     set_free(i, size);
+    add_begin_chain(i);
+
     if (next(i) == heap[0])
-    {
+    {   
+        remove_from_chain(i);
         heap[0] = i;
         set_used(i, 0);
     }
@@ -73,8 +100,9 @@ void free_ui(uint64_t *p)
 
 void init_heap(void)
 {
-    heap[0] = 4;
-    for (uint64_t i = 1; i <= 4; i++)
+    heap[0] = 5;
+    heap[1] = 0;
+    for (uint64_t i = 2; i <= 5; i++)
     {
         heap[i] = 1;
     }
@@ -85,10 +113,10 @@ void init_heap(void)
 uint64_t *malloc_ui(uint64_t size)
 {
     size = size + (size % 2);
-    for (int i = prologue + 2; i < heap[0]; i = next(i))
+    for (int i = heap[1]; i != 0; i = heap[i+1])
     {
         int size_i = read_size(i);
-        if (is_free(i) && size <= size_i)
+        if (size <= size_i)
         {
             if (size == size_i)
             {
@@ -120,13 +148,21 @@ uint64_t *malloc_ui(uint64_t size)
 int main(void)
 {
     init_heap();
-    uint64_t *p1 = malloc_ui(6);
-    uint64_t *p2 = malloc_ui(7);
-    uint64_t *p3 = malloc_ui(1);
-    set_memory(p1, 6, 42);
-    set_memory(p2, 7, 52);
-    set_memory(p3, 1, 62);
-    free_ui(p2);
+    uint64_t *p1 = malloc_ui(2);
+    uint64_t *p2 = malloc_ui(2);
+    uint64_t *p3 = malloc_ui(2);
+    uint64_t *p4 = malloc_ui(2);
+    uint64_t *p5 = malloc_ui(1);
+    uint64_t *p6 = malloc_ui(1);
+    set_memory(p1, 2, 42);
+    set_memory(p2, 2, 52);
+    set_memory(p3, 2, 62);
+    set_memory(p4, 2, 72);
+    set_memory(p5, 1, 82);
+    set_memory(p6, 1, 92);
+    free_ui(p1);
+    free_ui(p5);
+    free_ui(p3);
     for (int i = 0; i < HEAP_SIZE; i++)
     {
         printf("| %lu ", heap[i]);
