@@ -110,16 +110,31 @@ void delete(int_dynarray *t){
 
 void insert_at(int_dynarray *t, int i, int x){
     int_dynarray *temp = make_empty();
-    resize(temp, (t->len)-i);
-    for(int j=0; j<t->len-i; j++){
+    int size = (t->len)-i;
+    resize(temp, size);
+    for(int j=0; j<size; j++){
         push(temp, pop(t));
     }
     push(t,x);
-    for(int j=0; t->len-i; j++){
+    for(int j=0; j<size; j++){
         push(t, pop(temp));
     }
-    t->len +=1;
     delete(temp);
+}
+
+int extract_at(int_dynarray* t, int i){
+    int_dynarray *temp = make_empty();
+    int size = (t->len)-(i+1);
+    resize(temp, size);
+    for(int j=0; j<size; j++){
+        push(temp, pop(t));
+    }
+    int x = pop(t);
+    for(int j=0; j<size; j++){
+        push(t, pop(temp));
+    }
+    delete(temp);
+    return x;
 }
 
 int main(void){
@@ -132,21 +147,40 @@ int main(void){
     dynarray_set(t,5,200);
     printf("new val en 5: %d\n", dynarray_get(t,5));
     printf("\n");
-    printf("capacity before pop: %d\n",t->capacity);
-    printf("len before pop: %d\n",lenght(t));
+    printf("before pop:\n");
+    printf("capacity: %d\n",t->capacity);
+    printf("len: %d\n",lenght(t));
     for(int i=1;i<=2;i++){
         pop(t);
     }
     printf("\n");
     printf("after pop:\n");
-    printf("\n");
     printf("capacity: %d\n",t->capacity);
-    printf("len: %d\n",lenght(t));
-    printf("\n");
-    insert_at(t,7,300);
+    printf("Tableau:   ");
     for(int i=0;i<lenght(t);i++){
         printf("%d ", t->data[i]);
     }
+    printf("\n");
+    printf("len: %d\n",lenght(t));
+    printf("\n");
+    printf("after insert:\n");
+    insert_at(t,7,300);
+    printf("Tableau:   ");
+    for(int i=0;i<lenght(t);i++){
+        printf("%d ", t->data[i]);
+    }
+    printf("\n");
+    printf("len: %d\n",lenght(t));
+    printf("\n");
+    printf("after extract:\n");
+    extract_at(t,7);
+    printf("Tableau:   ");
+    for(int i=0;i<lenght(t);i++){
+        printf("%d ", t->data[i]);
+    }
+    printf("\n");
+    printf("len: %d\n",lenght(t));
+    printf("\n");
     delete(t);
     //* array_create(1,1);
 }
