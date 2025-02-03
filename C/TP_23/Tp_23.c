@@ -168,10 +168,38 @@ void test_is_sorted(void){
   free_list(u);
 }
 
-//a finir
 node *insert_rec(node *u, datatype x){
     if(u==NULL){return new_node(x);}
     if(u->data>x){return cons(u, x);}
+    u->next = insert_rec(u->next, x);
+    return u;
+}
+
+node *insertion_sort_rec(node *u){
+    if(u==NULL){return NULL;}
+    int l = length(u);
+    node *n = new_node(u->data);
+    u = u->next;
+    for(int i=1; i<l; i++){
+        insert_rec(n, u->data);
+        u = u->next;
+    }
+    return n;
+}
+
+void test_insertion_sort_rec(void){
+  int t[5] = {0, 4, 2, 1, 3};
+  int t_sorted[5] = {0, 1, 2, 3, 4};
+
+  node *u = from_array(t, 5);
+  node *v = insertion_sort_rec(u);
+  node *w = from_array(t_sorted, 5);
+
+  assert(is_equal(v, w));
+
+  free_list(u);
+  free_list(v);
+  free_list(w);
 }
 
 int main(void){
@@ -184,5 +212,6 @@ int main(void){
     test_to_array();
     test_is_equal();
     test_is_sorted();
+    test_insertion_sort_rec();
     return 0;
 }
