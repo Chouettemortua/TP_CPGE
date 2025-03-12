@@ -70,7 +70,7 @@ let cut l k =
 
 let rec karatsuba f g = 
   match f,g with
-  | [ ] ,_ | _,[ ] | [0], _ | _ ,[0] -> [0] (*pas utile mais acc\’el\‘ere*)
+  | [ ] ,_ | _,[ ] | [0], _ | _ ,[0] -> [0] (*pas utile mais accélére*)
   | [a ], _ -> List.map (fun x -> x*a) g
   | _ ,[ b] -> List.map (fun x -> x*b) f
   | _ , _-> 
