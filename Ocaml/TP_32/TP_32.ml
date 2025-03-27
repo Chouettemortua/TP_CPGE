@@ -49,12 +49,17 @@ let top l =
 
 let patience l =
   let configuration = Array.make (List.length l) [] in (*O(n)*)
-  match patience with
-  |[] -> configuration
-  |x::xs ->
-    let i = ref 0 in
-    while x > top configuration.(!i) do (*O(n²)*)
-      i := !i+1;
-    done;
-    configuration.(!i) <- x::configuration.(!i)
+  let rec aux l configuration =
+    match l with
+    |[] -> configuration
+    |x::xs ->
+      let i = ref 0 in
+      while x > top configuration.(!i) do (*O(n²)*)
+        i := !i+1;
+      done;
+      configuration.(!i) <- x::configuration.(!i);
+      aux xs configuration
+    in 
+  aux l configuration
+;;
 
