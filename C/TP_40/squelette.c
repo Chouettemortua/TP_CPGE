@@ -88,26 +88,84 @@ void mock_compress(FILE *input_file, FILE *output_file){
     fprintf(output_file, "%d", current);
 }
 
+byte_t decode_cw(FILE *fp, cw_t cw, stack *s){
+    assert(cw < dict.next_available_cw);
+    int size_ini = stack_size(s);
+    dict_entry_t in = dict.data[cw];
+    while (in.pointer != NULL_CW){
+        stack_push(s, in.byte);
+        in = dict.data[in.pointer];
+    }
+    stack_push(s, in.byte);
+    while (stack_size(s)>size_ini){
+        putc(stack_pop(s),fp);
+    }
+    
+    return in.byte;
+}
+
+byte_t get_first_byte(cw_t cw){
+    dict_entry_t in = dict.data[cw];
+    while (in.pointer != NULL_CW){
+        in = dict.data[in.pointer];
+    }
+    return in.byte;
+}
+
+void mock_decompress(FILE *input_file, FILE *output_file){
+    stack *s = stack_new(DICTFULL);
+    cw_t prev;
+    cw_t current;
+
+    if(fscanf(input_file, "%d", &prev)==1){
+        decode_cw(output_file, prev, s);
+    }
+
+    while(fscanf(input_file, "%d", &current)==1){
+        if(current < dict.next_available_cw){
+            uint8_t byte = decode_cw(output_file, current, s);
+            build_entry(prev, byte);
+        }
+        else{
+            uint8_t byte = get_first_byte(prev);
+            build_entry(prev, byte);
+            decode_cw(output_file, current, s);
+        }
+        prev = current;
+    }
+    stack_free(s);   
+}
+
+void outputs_bits(bit_file *bf, uint64_t data, int width, bool flush){
+    
+}
+
 int main(int argc, char* argv[]){
 
     FILE *input = stdin;
     FILE *output = stdout;
-    if(argc >= 3){input = fopen(argv[2], "rb");}
-    if(argc >= 4){output = fopen(argv[3], "wb");}
-    if(input = NULL){
+    if(argc >= 3){input = fopen(argv[2], "r");}
+    if(argc >= 4){output = fopen(argv[3], "w");}
+    if(input == NULL){
         printf("On ne peut pas ouvrir %s \n", argv[2]);
         return EXIT_FAILURE;
     }
-    if(output = NULL){
+    if(output == NULL){
         printf("On ne peut pas ouvrir %s \n", argv[3]);
         return EXIT_FAILURE;
     }
 
-
-
-    if(argv[1]='c'){return EXIT_SUCCESS;}
-    if(argv[1]='C'){EXIT_SUCCESS;}
-    if(argv[1]='d'){return EXIT_SUCCESS;}
-    if(argv[1]='D'){return EXIT_SUCCESS;}
+    initilize_dictionary();
+    if(argv[1][0]=='c'){return EXIT_SUCCESS;}
+    if(argv[1][0]=='C'){
+        mock_compress(input,output);
+        }
+    if(argv[1][0]=='d'){return EXIT_SUCCESS;}
+    if(argv[1][0]=='D'){
+        mock_decompress(input, output);
+    }
+    
+    fclose(input);
+    fclose(output);
     return EXIT_SUCCESS;
 }
