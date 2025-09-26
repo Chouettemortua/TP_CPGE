@@ -56,6 +56,8 @@ let affiche_exp_char (e : char exp_reg) = affiche_exp e print_char;;
 				- Cas de base :
 					. e = Vide : L(e) = {} donc L(e) ne contient pas le mot vide -> retourne false
 					. e = Symbole a : L(e) = {a} donc L(e) ne contient pas le mot vide -> retourne false
+					. e = Etoile(e1) : L(e) = L(e1)*
+						. L(e) contient toujours le mot vide -> retourne true
 				- Cas inductif :
 					. e = Union(e1,e2) : L(e) = L(e1) ∪ L(e2)
 						. Si L(e1) contient le mot vide, alors L(e) contient le mot vide -> retourne true
@@ -64,8 +66,6 @@ let affiche_exp_char (e : char exp_reg) = affiche_exp e print_char;;
 					. e = Concat(e1,e2) : L(e) = L(e1)L(e2)
 						. Si L(e1) contient le mot vide et L(e2) contient le mot vide, alors L(e) contient le mot vide -> retourne true
 						. Sinon, L(e) ne contient pas le mot vide -> retourne false
-					. e = Etoile(e1) : L(e) = L(e1)*
-						. L(e) contient toujours le mot vide -> retourne true
 				Donc par induction, la fonction genere_epsilon est correcte.
 *)
 let rec genere_epsilon (e : 'a exp_reg) : bool =	
@@ -96,9 +96,12 @@ let rec langage_epsilon (e : 'a exp_reg) : bool =
 	match e with
 	| Vide -> false
 	| Symbole a -> false
-	| Union(e1,e2) -> (langage_epsilon e1) && (est_vide e2) || (langage_epsilon e2) && (est_vide e1) || (langage_epsilon e1) && (langage_epsilon e2)
+	| Union(e1,e2) -> 
+		let b1 = langage_epsilon e1 in
+		let b2 = langage_epsilon e2 in
+		b1 && (est_vide e2) || b2 && (est_vide e1) || b1 && b2
 	| Concat(e1,e2) -> (langage_epsilon e1) && (langage_epsilon e2)
-	| Etoile(e1) -> langage_epsilon e1 || est_vide e1
+	| Etoile(e1) -> est_vide e1 || langage_epsilon e1
 ;;
 
 (*  
