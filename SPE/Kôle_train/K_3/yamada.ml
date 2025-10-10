@@ -71,10 +71,10 @@ delta = Hashtbl.create 1} in
 (* 
 Q1)
 Les langages L(p,q) pour p,q dans {0,1} pour l'automate du sujet sont définis par :
-- L00 = a*
+- L00 = a+
 - L01 = a*b+
 - L10 = existe pas (état 0 inatégnable depuis l'état 1)
-- L11 = b* (non acceptant)
+- L11 = b+ (non acceptant)
 *)
 (*
 Q2)
@@ -100,7 +100,7 @@ let matrice_initial(a : automate): exp_matrix =
 (*
 Q5)
 On calcule L(p,q,k+1) à partir de L(p,q,k) en utilisant la formule :
-L(p,q,k+1) = L(p,q,k) |  L(p,k+1,k) L(k+1,k+1,k)* L(k+1,q,k) 
+L(p,q,k+1) = L(p,q,k) |  L(p,k,k) L(k,k,k)* L(k,q,k) 
 On initialise la matrice avec k = 0, puis on itère jusqu'à k = n-1
 *)
 
@@ -135,10 +135,10 @@ let matrice_finale (a: automate): exp_matrix =
 ;;
 
 (*
-Q7) la fonction matrice_finale calcule card(delta)*n^3 opérations expression régulière
+Q7) la fonction matrice_finale calcule (n^2+card(delta))+n^3 opérations expression régulière
 *)
 (*
-Q8) L(A) est Union pour q dans F et i dans I des L(i,q,n-1) + Epsilon si il existe un i dans I inter F
+Q8) L(A) est Union pour q dans F et i dans I des L(i,q,n-1) U Epsilon si il existe un i dans I inter F sinon Lang(Vide)
 *)
 
 let mcnaughton_yamada (a : automate) : exp_reg =
