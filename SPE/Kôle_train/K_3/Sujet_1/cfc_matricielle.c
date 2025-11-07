@@ -98,7 +98,7 @@ void liberer_matrice(bool** m, int n){
 bool** nulle (unsigned int n){
     bool** m = malloc(n*sizeof(bool*));
     for (unsigned int i = 0 ; i < n ; i++){
-        m[i] = malloc(n*sizeof(bool*));
+        m[i] = malloc(n*sizeof(bool));
         for (unsigned int j = 0 ; j < n ; j++){
             m[i][j] = false;
         }
@@ -110,7 +110,7 @@ bool** nulle (unsigned int n){
 bool** identite (unsigned int n){
     bool** m = malloc(n*sizeof(bool*));
     for (unsigned int i = 0 ; i < n ; i++){
-        m[i] = malloc(n*sizeof(bool*));
+        m[i] = malloc(n*sizeof(bool));
         for (unsigned int j = 0 ; j < n ; j++){
             if (i==j) m[i][j] = true;
             else m[i][j] = false;
@@ -148,8 +148,9 @@ void produit(unsigned int n, bool** m1, bool** m2, bool** m3){
 
 // Montrer que pour tout i,j in S, m ij = true ssi il existe un chemin de longueur p de i à j dans G.
 // Preuve par récurrence sur p.
-// Initialisation : p = 1
-// Pour p = 1, m ij = true ssi il existe une arête de i à j dans G, ce qui est vrai par définition de la matrice d'adjacence
+// Initialisation : p = 0
+// Pour p = 0, m ii = true car le seul chemin de longueur 0 est le chemin vide de i à i.
+// Pour i != j, m ij = false car il n'existe pas de chemin de longueur 0 de i à j.
 // Hérédité : Supposons que la propriété est vraie pour p = k, montrons qu'elle est vraie pour p = k+1.
 // Soit m ij = true dans B^(k+1). Par définition du produit matriciel booléen, il existe un sommet intermédiaire r tel que m ir = true dans B^k et m rj = true dans B.
 // Par hypothèse de récurrence, il existe un chemin de longueur k de i à r dans G et une arête de r à j dans G.
@@ -185,6 +186,7 @@ void produit(unsigned int n, bool** m1, bool** m2, bool** m3){
 // Par le théorème de la convergence monotone, la suite (B_p)p in N converge vers une limite B*.
 // De plus, comme la suite est croissante et bornée supérieurement, elle est stationnaire à partir d'un certain rang p0.
 // Autrement dit, il existe un entier P tel que pour tout p >= P, B_p = B*.
+// dans le pire cas P = n-1 car le plus long chemin dans un graphe sans cycle a une longueur de n-1.
 
 // Question 12 : Écrire une fonction qui calcule la matrice d'accessibilité d'un graphe g donné.
 
@@ -193,17 +195,8 @@ void produit(unsigned int n, bool** m1, bool** m2, bool** m3){
 // B_p+1 = B_p + B^p+1 = I + B^1 + B^2 + ... + B^p + B^(p+1) = I + B*(B_p)
 bool** chemins(const graphe g){
   unsigned int n = g.N;
-  bool** B_p = nulle(n);  // B_p
+  bool** B_p = identite(n);  // B_0 = I
   bool** B_temp = nulle(n); // temporaire pour le calcul de B^p
-  // Initialisation de B_1
-  for (unsigned int i = 0 ; i < n ; i++){
-    for (unsigned int j = 0 ; j < n ; j++){
-      B_p[i][j] = g.adj[i][j];
-      if (i == j){
-        B_p[i][j] = true;
-      }
-    }
-  }
   // Calcul de B_p jusqu'à la convergence
   bool not_converged = true;
   while (not_converged){
@@ -229,9 +222,9 @@ bool** chemins(const graphe g){
 }
     
 // Question 13 : Complexité de la fonction chemins
-// dans le pire des cas, la fonction chemins effectue O(n^2) itérations de la boucle while avant de converger.
+// dans le pire des cas, la fonction chemins effectue O(n-1) itérations de la boucle while avant de converger.
 // À chaque itération, elle effectue O(n^3) opérations pour calculer le produit matriciel booléen.
-// Ainsi, la complexité totale de la fonction chemins est O(n^5). (on doit pouvoir affiner car dans le pire cas on ne fait pas exactement n^2 itérations)
+// Ainsi, la complexité totale de la fonction chemins est O(n^4). (on doit pouvoir affiner car dans le pire cas on ne fait pas exactement n^2 itérations)
 
 // Question 14 : Ecrire la fonction cnf qui renvoi un tab de taille |S| tel que tab[i] contient l'indice de la composante fortement connexe du sommet i.
 unsigned int* cnf (const graphe g){
