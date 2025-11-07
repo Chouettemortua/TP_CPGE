@@ -11,5 +11,5 @@ full: *.c
 clean:
 	rm -f *.o *.exe
 
-run : main
+run: main
 	./main.exe
