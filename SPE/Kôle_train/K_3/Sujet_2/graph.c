@@ -14,13 +14,42 @@ struct graph_s {
 typedef struct graph_s graph;
 
 int degre_max(graph* g, bool* partie) {
-  // À compléter
-  return -1;
+  int max = -1;
+  for (int s = 0; s < g->n; s += 1) {
+    if (partie[s]) {
+      if (g->degre[s] > max) {
+        max = g->degre[s];
+      }
+    }
+  }
+  return max;
 }
 
 bool* accessibles(graph* g, int s) {
-  // À compléter
-  return NULL;
+  if (s < 0 || s >= g->n) {
+    return NULL;
+  }
+  bool* vu = malloc(g->n * sizeof(bool));
+  if (vu == NULL) {
+    return NULL;
+  }
+  for (int i = 0; i < g->n; i ++) {
+    vu[i] = false;
+  }
+  vu[s] = true;
+
+  void explore(int u){
+    for (int i = 0; i < g->degre[u]; i ++) {
+      int v = g->voisins[u][i];
+      if (!vu[v]) {
+        vu[v] = true;
+        explore(v);
+      }
+    }
+  }
+
+  explore(s);
+  return vu;
 }
 
 int nb_accessibles(graph* g, int s) {
@@ -37,9 +66,21 @@ int nb_accessibles(graph* g, int s) {
 }
 
 int degre_etoile(graph* g, int s) {
-  // À compléter
-  return -1;
+  int res = 0;
+  bool* access = accessibles(g, s);
+  if (access == NULL) {return -1;}
+  for (int i = 0; i < g->n; i ++) {
+    if (access[i]) {
+      if (g->degre[i] > res) {
+        res = g->degre[i];
+      }
+    }
+  }
+  free(access);
+  return res;
 }
+
+// complecité en temps de degre_etoile : O(n + m) où n est le nombre de sommets et m le nombre d'arêtes du graphe
 
 int main(void) {
 
