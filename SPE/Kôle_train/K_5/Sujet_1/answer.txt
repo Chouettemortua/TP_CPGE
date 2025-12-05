@@ -1,0 +1,44 @@
+p-COLOR:
+E: G(S,A) un graphe non orienté
+S: vrai si il existe un coloration de G utilisant au plus p couleur faux Sinon
+
+On admet que le pb a 3-COLOR est np-dur
+
+1/ Cook-Levin : Le pb SAT est NP-complet
+
+2/ 
+    Pb p-COLOR :
+        Ensemble C -> l'Ensemble des p (on numérote les couleur jusqu'a p et on va pas plus loin) 
+                        coloration (une couleur est associé a chaque sommet donc polynomial O(S)) 
+        Fonction de vérification -> 
+                                               | V si c est une coloration valide de G  
+                                    g(G,c) =   |                                        (polynomial en G on parcours les arrête du graphe)
+                                               | F sinon
+    Donc p-COLOR est inclu dans NP
+
+3/ (Corrigé)
+    Mq 4-COLOR est NP-dur :
+
+    Soit G = (S,A) .... de 3-COLOR
+    On pose G' = (S', A') .... 4-COLOR
+    S'= S U {s}
+    A' = A U {(s,t)|t in S}
+
+    Si le sommet s a pour couleur 3 (différente des autre)
+    alors il nous reste 3 couleur pour coloré le reste de G', ce reste est G
+    Donc G est 3-COLOR si G' est 4-COLOR.
+
+    Or 3-COLOR est NP-dur et est réduit a 4-COLOR est NP-dur car la réduction est polynomial 
+    (on rajoute juste 1 sommet donc on a bien un polynome en fonction de G)
+
+4/
+    Mq pour tout p=>3 p-COLOR est NP-dur :
+        De la même manière que la question précédente on prend (p-1)-COLOR on le réduit de manière polynomial a p-COLOR.
+        Le cas de base 3-COLOR, ainsi pour p=>3 p-COLOR est NP-dur 
+
+5/  
+    Par q3 p-COLOR est NP-dur (p=>3) et par q2 il est inclu dans NP
+    Donc par définition pour p=>3, p-COLOR est NP-complet
+
+6/
+    Mq 2-COLOR inclu est dans P : NON FAIT

@@ -1,0 +1,52 @@
+
+EXACT COVER :
+E: X inclu = de N, F une famille finie de partie de X
+S: V si il existe F' inclu = de F formant une partition de X, faux sinon
+
+1/ exemple :
+
+    X = {1,2,3,4,5,6,7,8,9,10}
+    F1 = { {1,2,3} ,{4,5,6}, {7,8,9,10} } (c'est une instance positive)
+    F2 = { {1,2,3,4}, {4,5,6}, {7,8,9,10} } (c'est une instance négative)
+
+2/ mq EXACT COVER est inclu dans NP :
+
+    Ensemble C -> l'ensemble des sous famille de F (borné par un polynome en F, donc en X+F)
+    Fonction de vérification ->  
+        g(F', X, F) = V si F' est une patirtition de X et F sinon 
+        Pour ce faire on doit verifier qu'il y a pas d'élément en double dans F' et qu'il couvre tout les élément de X 
+        (c'est un polynome en X+F car on parcourt F' 1 fois qui est plus petit que F et on vérifi que F' fait a le même nb d'él tot que X (même parcourt))
+
+    Pour X on peut utiliser un tableau de k case (k=nb de val)
+    Pour les F on peu utilisé des tableau de tableau (F' on indiquerait juste les élément de F que on a choisit donc une liste F')
+
+    EXACT COVER est dans NP
+
+3/ 
+
+SUBSET SUM
+E: un entier V, un ensemble d'entier v = {v1, v2, ..., vn}, n qq
+S: V si il existe un ensemble d'indice I inclu dans [|1,n|] tel que somme des vi = V; faux sinon
+
+    V = 50
+    v1 = {1,2,3} -> instance fausse 
+    v2 = {1,2,48} -> instance vrai
+
+4/ Mq SUBSET SUM est inclu dans NP:
+    Ensemble C -> l'ensemble des sous ensemble I (borné par un polynome en v car le nb de sous ensemble d'indice dépend du nb d'indice possible)
+    Fonction de vérification ->
+        g(V,v,I) = vrai si somme de v.(i) pour i dans I est égale a V, faux sinon
+    Pour que ce soit polynomial en v+V on prend v un tableau qui a la case j il met la vj+1 et I une liste d'indice
+
+Ainsi SUBSET SUM est inclu dans NP
+
+5/ la somme des élémemt de X
+    (S, {w(P) | P ∈ F }) est une instance positive de SUBSET SUM
+    car S = somme des  {w(P) | P ∈ F'} or F' ⊆ F donc {w(P) | P ∈ F'}⊆{w(P) | P ∈ F} donc on peux forcément sélectioner les même élément pour retrouver la même valeur
+
+6/
+
+7/ Par la 6/ on peut réduire EXACT COVER a SUBSET SOMME (en prenant V la somme des terme de X et v = {w(P) | P ∈ F})
+    Donc SUBSET SOMME est NP-dur
+
+8/ SUBSET SOMME est NP-dur et il est inclu dans NP donc il est NP-complet et par la réduction induite par 5/ EXACT COVER est aussi NP-complet
