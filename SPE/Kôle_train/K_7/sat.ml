@@ -17,7 +17,15 @@ let initialise (n : int) : valuation =
   Array.init n (fun _ -> Random.int 2 = 0)
 
 let evalue (c : clause) (v : valuation) : bool =
-  failwith "à compléter"
+  let rec aux i =
+    if i >= Array.length c then
+      false
+    else
+      match c.(i) with
+      | V j -> if v.(j) then true else aux (i + 1)
+      | NV j -> if not v.(j) then true else aux (i + 1)
+  in
+  aux 0
 
 (* Objectif : prendre en entrée une formule `f` sur `n` variables, un
    nombre d'essais maximum `k` supposé strictement positif et s'évaluer
@@ -32,7 +40,7 @@ let random_sat (f : formule) (n : int) (k : int) : valuation option =
     | c :: cs ->
        if evalue c v then
          test cs k
-       else if k < 1 then
+       else if k <= 1 || c = [||] then
          None
        else begin
          let i = Random.int (Array.length c) in
@@ -41,3 +49,5 @@ let random_sat (f : formule) (n : int) (k : int) : valuation option =
        end
   in
   test f k
+
+
