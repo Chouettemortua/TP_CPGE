@@ -5,6 +5,7 @@
 #include <pthread.h>
 
 FILE* fichier = NULL;
+pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
 
 struct cellule{
 	char* nom;
@@ -18,8 +19,10 @@ void ajouter(liste* l, char* nom){
 	liste new_l= malloc(sizeof(liste));
 	new_l->nom = malloc(sizeof(char)*(1+strlen(nom)));
 	strcpy(new_l->nom,nom);
+	pthread_mutex_lock(&m);
 	new_l->suivant = *l;
 	*l = new_l;
+	pthread_mutex_unlock(&m);
 }
 
 int taille(liste l){
